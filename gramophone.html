@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="./Jquery/jquery-3.4.1.js"></script>
+    <script src="./Vue/vue.js"></script>
+    <link rel=stylesheet type="text/css" href="gramophone.css">
+    <link rel=stylesheet type="text/css" href="fontawesome/css/all.css">
+    <script>
+        $(document).ready(function(){
+            var audio = new Audio();
+
+            var app = new Vue({
+                el:'#content',
+                data:{
+                    hiddenReminder:false,//隱藏提醒
+                    nowSongKey: 0,      //現在在撥哪首歌
+                    slideMenu:true,     //選單
+                    playingMusic:false, //是否撥放
+                    nowVolume:0.5,      //音量
+                    currentTime:0,      //歌撥放了幾秒
+                    timer:0,            //計時器
+                    songs:[             //歌單
+                        {
+                        id:0,
+                        title:"You've Got a Friend in Me",
+                        singer:"Randy Newman",
+                        picture:"./Img/Youve_Got_a_Friend_in_Me.jpg",
+                        audio:"./Song/Youve_Got_a_Friend_in_Me.mp3",
+                        time:"02:08",
+                        totalTime:"128",
+                        islike:true
+                        },
+                        {
+                        id:1,
+                        title:"Tomorrow tonight",
+                        singer:"Lootes",
+                        picture:"./Img/Tomorrow_tonight.jpg",
+                        audio:"./Song/Tomorrow_tonight.mp3",
+                        time:"03:23",
+                        totalTime:"203",
+                        islike:true
+                        },
+                        {
+                        id:2,
+                        title:"Shallow",
+                        singer:"Lady Gaga,Bradley Cooper",
+                        picture:"./Img/Shallow.jpg",
+                        audio:"./Song/Shallow.mp3",
+                        time:"03:36",
+                        totalTime:"216",
+                        islike:true
+                        },
+                        {
+                        id:3,
+                        title:"I'm Yours Forever",
+                        singer:"Unknow",
+                        picture:"./Img/I'm_Yours_Forever.jpg",
+                        audio:"./Song/Im_Yours_Forever.mp3",
+                        time:"04:25",
+                        totalTime:"265",
+                        islike:true
+                        },
+                        {
+                        id:4,
+                        title:"I'm Not OK",
+                        singer:"Vast & Hast",
+                        picture:"./Img/I'm_Not_OK.jpg",
+                        audio:"./Song/Im_Not_OK.mp3",
+                        time:"05:06",
+                        totalTime:"306",
+                        islike:true
+                        },
+                        {
+                        id:5,
+                        title:"Undertale",
+                        singer:"Unknow",
+                        picture:"./Img/Undertale.png",
+                        audio:"./Song/Undertale.mp3",
+                        time:"12:12",
+                        totalTime:"732",
+                        islike:true
+                        },
+                        {
+                        id:6,
+                        title:"Wild Heart",
+                        singer:"Bleachers",
+                        picture:"./Img/Wild_Heart.jpg",
+                        audio:"./Song/Wild_heart.mp3",
+                        time:"03:22",
+                        totalTime:"202",
+                        islike:true
+                        },
+                        {
+                        id:7,
+                        title:"Takeaway",
+                        singer:"The Chainsmokers, Illenium ",
+                        picture:"./Img/Takeaway.jpg",
+                        audio:"./Song/Takeaway.mp3",
+                        time:"03:48",
+                        totalTime:"228",
+                        islike:true
+                        }
+                    ]
+                },
+                methods:{
+                    //提醒
+                    remider:function(){
+                        alert("按下旁邊的List會出現完整歌單");
+                    },
+                    //選單切換
+                    swithchSlideMenu:function(){
+                        this.slideMenu = !this.slideMenu;
+                        this.hiddenReminder = true;
+                    },
+                    //切換歌的時候需初始化
+                    initialData:function(){
+                        this.pause();
+                        this.currentTime = 0;
+                    },
+                    //播放切換
+                    swithchPlayingMusic:function(){
+                        //是否播放
+                        this.playingMusic = !this.playingMusic;
+                        if(this.playingMusic){
+                            this.play();
+                        }
+                        else{
+                            this.pause();
+                        }
+                    },
+                    //下一首
+                    nextSong:function(){
+                        this.initialData();
+                        //目前歌曲
+                        var mySongCount = this.songs.length;
+                        if((mySongCount-1) == this.nowSongKey){
+                            this.nowSongKey = 0;
+                        }
+                        else{
+                            this.nowSongKey++;
+                        }
+                        //是否在撥放狀態
+                        if(this.playingMusic){
+                            this.play();
+                        }
+                        else{
+                            this.pause();
+                        }
+                    },
+                    //上一首
+                    preSong:function(){
+                        this.initialData();
+                        //目前歌曲
+                        var mySongCount = this.songs.length;
+                        if(this.nowSongKey == 0 ){
+                            this.nowSongKey = mySongCount-1;
+                        }
+                        else{
+                            this.nowSongKey--;
+                        }
+                        //是否在撥放狀態
+                        if(this.playingMusic){
+                            this.play();
+                        }
+                        else{
+                            this.pause();
+                        }
+                    },
+                    //隨機撥放
+                    randomSong:function(){
+                        alert("隨機撥放很簡單，之後補，如果沒做一定是我忘了抱歉ㄏ");
+                    },
+                    //選單換歌
+                    changeSong:function(index){
+                        this.initialData();
+                        this.nowSongKey = index;
+                        //是否在撥放狀態
+                        if(this.playingMusic){
+                            this.play();
+                        }
+                        else{
+                            this.pause();
+                        }
+                    },
+                    //我的最愛
+                    favorite:function(){
+                        alert("由於時間已經不夠了，此功能尚未開發完\n功能將於下次改版推出，如果有下次的話");
+                    },
+                    //播放音樂
+                    play:function(){
+                        audio.src = this.songs[this.nowSongKey].audio; //撥放音樂路徑
+                        audio.currentTime = this.currentTime; //從哪開始撥放
+                        //使用前先把計時器歸零
+                        clearInterval(this.timer);
+                        //使用計時器紀錄秒數
+                        this.timer = setInterval(this.currentTimeFunc,1000);
+                        audio.play(); //撥放
+                    },
+                    //關閉音樂
+                    pause:function(){
+                        //關閉計時器，不然會越數越快
+                        clearInterval(this.timer);
+                        audio.pause();
+                    },
+                    //現在撥了多久
+                    currentTimeFunc:function(){
+                        this.currentTime ++;
+                        //撥完了換下一首
+                        if(this.currentTime >this.songs[this.nowSongKey].totalTime){
+                            this.nextSong();
+                        }                        
+                    },
+                    //拉動進度調後，要從正確的位置開始撥放
+                    setCurrentTime:function(){
+                        //是否在撥放狀態
+                        if(this.playingMusic){
+                            this.play();
+                        }
+                        else{
+                            this.pause();
+                        }
+                    }
+                },
+                watch:{
+                    //同步變更音量
+                    nowVolume:function(newVolume){
+                        audio.volume = newVolume;
+                    }
+                },
+                computed:{
+                    //把 秒 轉換成  分：秒
+                    parseMintue:function(){
+                        var myMinute = parseInt(this.currentTime/60);
+                        var mySecond = this.currentTime%60;
+                        if (myMinute / 10 < 1) {
+                            myMinute = "0" + myMinute;
+                        }
+                        if (mySecond / 10 < 1) {
+                            mySecond = "0" + mySecond;
+                        }
+                        return myMinute + "：" + mySecond;
+                    }
+                }
+            })
+        });
+
+        
+    </script>
+</head>
+<body>
+    <div id="content">
+        <!--唱片機-->
+        <div id="player">
+            <!--提醒-->
+            <div id="reminder" class="fas fa-question-circle fa-2x" :class="{'HiddenReminder':hiddenReminder}" @click="remider">
+            </div>
+            <!--唱片-->
+            <div id="disc">
+                <img class="disc-picture" v-bind:src="songs[nowSongKey].picture" :class="{'rotateDisc':playingMusic}">
+            </div>
+            <!--切換-->
+            <div id="btn-next-pre-area">
+                <button id="btnNextSong" @click="nextSong">
+                    <img src="Img/Player/next.svg"/>
+                </button>
+                <button @click="preSong">
+                    <img src="Img/Player/next.svg"/>
+                </button>
+                <button @click="randomSong">
+                    <img src="Img/Player/random.svg"/>
+                </button>
+            </div>
+            <!--操作桿-->
+            <div id="playerPole" class="pauseMusic" v-bind:class="{'playingMusic':playingMusic}" >
+                <img id="playerPolePic" src="Img/Player/player.png">
+            </div> 
+            <!--歌資訊-->
+            <div id="divSongInfo">
+                <p>歌名：{{songs[nowSongKey].title}}</p>
+                <p>演唱者：{{songs[nowSongKey].singer}}</p>
+            </div>
+            <!--播放-->
+            <button class="btnPlay" v-if="!playingMusic" @click.prevent="swithchPlayingMusic">
+                <img src="Img/Player/play2.svg">
+            </button>
+            <button class="btnPlay" v-else @click.prevent="swithchPlayingMusic">
+                    <img src="Img/Player/stop2.svg">
+            </button>
+            <!--音量-->
+            <div id="divVoiceBar">
+                <input v-model="nowVolume" type="range" min="0" max="1" step="0.01" style="width:75%">
+                <img class="sound" src="Img/Player/sound.svg" alt="">
+            </div>
+            <!--音樂時間條-->
+            <div id="divTimeLine">
+                <span>{{parseMintue}}</span>
+                <input type="range" min="0" :max="songs[nowSongKey].totalTime" v-model="currentTime" step="1" value="0" style="width:65%" @change="setCurrentTime">
+                <span>{{songs[nowSongKey].time}}</span>
+            </div>
+        </div>
+        <!--播放清單-->
+        <div id="playList"  :class="{'slidenMenu':slideMenu}">
+            <div id="playList_leftSide">
+                <div class="playList_MainList">
+                    播放列表
+                </div>
+                <div class="playList_SubList">
+                    <div>
+                        所有歌單
+                    </div>
+                    <div @click="favorite">
+                        我的最愛
+                    </div>
+                </div>
+            </div>
+            <div id="playList_rightSide">
+                <div id="playList_rightSide_top">
+                    <span>所有歌單</span>
+                    <a href="javascript:void(0)" @click.prevent="swithchSlideMenu" id="List_Switch_Button">
+                        <div>List</div>
+                        <div class="fas fa-bars"></div>
+                    </a>
+                </div>
+                <div id="playList_rightSide_middle">
+                    <div v-for="song in songs" @click="changeSong(song.id)">
+                        <div>{{song.title}}</div>
+                        <div>{{song.singer}}</div>
+                        <div>{{song.time}}</div>
+                    </div>
+                </div>
+                <div id="playList_rightSide_bottom">
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
