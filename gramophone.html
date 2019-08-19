@@ -7,10 +7,8 @@
     <link rel=stylesheet type="text/css" href="fontawesome/css/all.css">
     <script>
         $(document).ready(function(){
-            //初始化歌曲
-            var audio = new Audio("./Song/Youve_Got_a_Friend_in_Me.mp3");
-            //因為ios預設不會載入資源，怕消耗流量，要用這行載入
-            audio.load();
+            var audio = new Audio();
+
             var app = new Vue({
                 el:'#content',
                 data:{
@@ -133,7 +131,7 @@
                     //下一首
                     nextSong:function(){
                         this.initialData();
-                        //第一首跟最後一首要相連
+                        //目前歌曲
                         var mySongCount = this.songs.length;
                         if((mySongCount-1) == this.nowSongKey){
                             this.nowSongKey = 0;
@@ -141,9 +139,6 @@
                         else{
                             this.nowSongKey++;
                         }
-                        //目前歌曲
-                        audio.src = this.songs[this.nowSongKey].audio; //撥放音樂路徑
-                        audio.load();
                         //是否在撥放狀態
                         if(this.playingMusic){
                             this.play();
@@ -155,7 +150,7 @@
                     //上一首
                     preSong:function(){
                         this.initialData();
-                        //第一首跟最後一首要相連
+                        //目前歌曲
                         var mySongCount = this.songs.length;
                         if(this.nowSongKey == 0 ){
                             this.nowSongKey = mySongCount-1;
@@ -163,9 +158,6 @@
                         else{
                             this.nowSongKey--;
                         }
-                        //目前歌曲
-                        audio.src = this.songs[this.nowSongKey].audio; //撥放音樂路徑
-                        audio.load();
                         //是否在撥放狀態
                         if(this.playingMusic){
                             this.play();
@@ -182,9 +174,6 @@
                     changeSong:function(index){
                         this.initialData();
                         this.nowSongKey = index;
-                        //目前歌曲
-                        audio.src = this.songs[this.nowSongKey].audio; //撥放音樂路徑
-                        audio.load();
                         //是否在撥放狀態
                         if(this.playingMusic){
                             this.play();
@@ -199,6 +188,7 @@
                     },
                     //播放音樂
                     play:function(){
+                        audio.src = this.songs[this.nowSongKey].audio; //撥放音樂路徑
                         audio.currentTime = this.currentTime; //從哪開始撥放
                         //使用前先把計時器歸零
                         clearInterval(this.timer);
